@@ -84,6 +84,7 @@ const
   BaseDropdown = ({ name, label, required, disabled, value, values, choices, trigger, placeholder }: Dropdown) => {
     const
       isMultivalued = !!values,
+      [singleSelection, setSingleSelection] = React.useState<S | U | undefined>(value),
       selection = React.useMemo(() => isMultivalued ? new Set<S>(values) : null, [isMultivalued, values]),
       [selectedOptions, setSelectedOptions] = React.useState(Array.from(selection || [])),
       options = (choices || []).map(({ name, label, disabled }): Fluent.IDropdownOption => ({ key: name, text: label || name, disabled })),
@@ -97,6 +98,7 @@ const
             wave.args[name] = selectedOpts
             setSelectedOptions(selectedOpts)
           } else {
+            setSingleSelection(option.key)
             wave.args[name] = optionKey
           }
         }
@@ -134,8 +136,8 @@ const
           required={required}
           disabled={disabled}
           multiSelect={isMultivalued || undefined}
-          defaultSelectedKey={!isMultivalued ? value : undefined}
           selectedKeys={isMultivalued ? selectedOptions : undefined}
+          selectedKey={singleSelection}
           onChange={onChange}
         />
         {
